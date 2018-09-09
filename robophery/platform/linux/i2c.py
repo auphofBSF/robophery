@@ -10,9 +10,14 @@ from robophery.interface.i2c import I2cInterface
 class SMBusI2cInterface(I2cInterface):
 
     def __init__(self, *args, **kwargs):
-        self._busnum = int(kwargs.get('busnum', 1))
-        self._bus = smbus.SMBus(self._busnum)
         super(SMBusI2cInterface, self).__init__(*args, **kwargs)
+        self._busnum = int(kwargs.get('busnum', 1))
+        try:
+            self._bus = smbus.SMBus(self._busnum)        
+        except PermissionError:
+                self._log.info("Insufficient Privilages to access I2C")
+                raise RuntimeError(
+                "Insufficient Privilages to access I2C")
         self._log.info("Started interface {0}.".format(self))
         self.scan()
 
