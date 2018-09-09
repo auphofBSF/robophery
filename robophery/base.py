@@ -100,7 +100,7 @@ class ModuleManager(object):
         if self._publish_interval % self._read_interval != 0:
             raise ValueError(
                 "Publish_interval must be divisible by read_interval.")
-        self._read_cycle = self._publish_interval / self._read_interval
+        self._read_cycle = int(self._publish_interval / self._read_interval)
         self._log.info("Read interval is {0}ms, publish interval is {1}ms, data bucket contains {2} items.".format(
             self._read_interval, self._publish_interval, self._read_cycle))
 
