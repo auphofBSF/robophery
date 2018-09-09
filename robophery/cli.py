@@ -46,8 +46,19 @@ def _config(module_conf, opts=None):
 
 
 def manager_service():
-    sys.path.append("/etc/robophery")
-    from robophery_conf import CONF
+    if 'ROBOPHERY_CONF' in os.environ:
+        sys.path.append(os.environ['ROBOPHERY_CONF'])
+        print("Configuration 'ROBOPHERY_CONF':{0}".format(os.environ['ROBOPHERY_CONF']))
+    else:
+        print("Using default Configuration path: '/etc/robophery'")
+        sys.path.append("/etc/robophery")
+    try:
+        from robophery_conf import CONF
+    except:
+        #TODO: covnert following print to logging and check termination
+        print('Configuration file cannot be found')
+        return 1
+    
     manager = ModuleManager(**CONF)
     manager.run()
 
