@@ -50,6 +50,12 @@ Install dependencies and robophery
     pip install -r requirements.txt
     python setup.py install
 
+
+if PyYAML version error dsutils  ("Cannot uninstall 'PyYAML'. It is a distutils installed project ......: ) see
+https://github.com/pypa/pip/issues/5247#issuecomment-415571153
+Fix pip install -r requirements.txt --ignore-installed PyYAML
+
+
 Service
 -------
 
