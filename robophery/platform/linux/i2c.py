@@ -1,5 +1,5 @@
 try:
-    import smbus
+    import smbus2 as smbus
 except ImportError:
     raise RuntimeError(
         "Cannot load smbus library. Please install the library.")

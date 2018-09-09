@@ -8,7 +8,9 @@ try:
     import logging
     logging_format = "%(created)f [%(name)s] %(message)s"
     logging.basicConfig(format=logging_format, level=logging.DEBUG)
+    logging.info("---------------BASE Class: import logging:complete")
     from importlib import import_module
+    logging.info("---------------BASE Class: import import_module: complete")
 except ImportError:
     pass
 
@@ -100,14 +102,18 @@ class ModuleManager(object):
         if self._publish_interval % self._read_interval != 0:
             raise ValueError(
                 "Publish_interval must be divisible by read_interval.")
-        self._read_cycle = self._publish_interval / self._read_interval
+        self._read_cycle = int(self._publish_interval / self._read_interval)
         self._log.info("Read interval is {0}ms, publish interval is {1}ms, data bucket contains {2} items.".format(
             self._read_interval, self._publish_interval, self._read_cycle))
 
         # setting up base classes
+        logging.info("---------------BASE ModuleManager: _init :   setting up base classes")
         self._setup_communication(self._config['comm'])
+        logging.info("---------------BASE ModuleManager: _init :   comm: complete")
         self._setup_interfaces(self._config['interface'])
+        logging.info("---------------BASE ModuleManager: _init :   interface: complete")
         self._setup_modules(self._config['module'])
+        logging.info("---------------BASE ModuleManager: _init :   module: complete")
 
         self._log.info("Service {0} successfuly started in {1} mode as {2} platform.".format(
             self._name, self._run_mode, self._platform))
@@ -170,6 +176,9 @@ class ModuleManager(object):
         Initialise communication channels
         """
         for comm_name, comm in comms.items():
+            logging.info("---------------BASE ModuleManager: _setup_communication :   " +
+                        "class: {0} {1}".format(comm_name, comm.get('class')))
+
             CommClass = self._load_class(comm.get('class'))
             comm['name'] = comm_name
             comm['manager'] = self
@@ -180,13 +189,26 @@ class ModuleManager(object):
         Initialise platform bus interfaces
         """
         for interface_name, interface in interfaces.items():
+            logging.info("---------------BASE ModuleManager: _setup_interfaces :   " +
+                        "interface_name: {0} {1}".format(interface_name, interface))
+
             if 'data' not in interface:
+                logging.info("---------------BASE ModuleManager: _setup_interfaces :   " +
+                        "data not in interface")
+
                 InterfaceClass = self._load_class(interface.get('class'))
+                logging.info("---------------BASE ModuleManager: _setup_interfaces :   " +
+                        "InterfaceClass: {0}".format(interface.get('class')))
+
                 interface['name'] = interface_name
                 interface['manager'] = self
                 self._interface[interface_name] = InterfaceClass(**interface)
+                logging.info("---------------BASE ModuleManager: _setup_interfaces :   " +
+                        "class loaded")
+
         for interface_name, interface in interfaces.items():
             if 'data' in interface:
+                #TODO: should the reference not be data.class then 
                 InterfaceClass = self._load_class(interface.get('class'))
                 interface['name'] = interface_name
                 interface['manager'] = self
@@ -216,6 +238,9 @@ class ModuleManager(object):
         Load class by path string
         """
         if isinstance(name, str):
+            logging.info("---------------BASE ModuleManager: _load_class :   " +
+                        "name: {0}".format(".".join(name.split(".")[:-1])))
+
             module = import_module(".".join(name.split(".")[:-1]))
             if module and module is not None:
                 return getattr(module, name.split(".")[-1], None)
